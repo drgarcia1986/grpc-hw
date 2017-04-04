@@ -4,10 +4,17 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 
 	pb "github.com/drgarcia1986/grpc-hw/pb"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+)
+
+var (
+	rpcPort  = ":50051"
+	httpPort = ":8080"
 )
 
 type server struct{}
@@ -17,9 +24,25 @@ func (*server) Say(ctx context.Context, in *pb.Request) (*pb.Response, error) {
 }
 
 func main() {
-	port := ":50051"
+	go runRPCServer()
+	runHTTPServer()
+}
 
-	listener, err := net.Listen("tcp", port)
+func runHTTPServer() {
+	ctx := context.Background()
+
+	mux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithInsecure()}
+
+	if err := pb.RegisterHelloWorldHandlerFromEndpoint(ctx, mux, rpcPort, opts); err != nil {
+		panic(err)
+	}
+
+	log.Println("HTTP Server: ", http.ListenAndServe(httpPort, mux))
+}
+
+func runRPCServer() {
+	listener, err := net.Listen("tcp", rpcPort)
 	if err != nil {
 		log.Fatal("failed to listen: ", err)
 	}
@@ -27,5 +50,5 @@ func main() {
 	s := grpc.NewServer()
 	pb.RegisterHelloWorldServer(s, &server{})
 
-	s.Serve(listener)
+	log.Println("gRPC server: ", s.Serve(listener))
 }
