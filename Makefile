@@ -6,3 +6,12 @@ gen-http-gateway:
 
 gen-swagger:
 	@protoc -I/usr/local/include -I. -I$(GOPATH)/src -I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --swagger_out=logtostderr=true:server/swagger-ui/ ./*.proto
+
+run-server:
+	@go run server/server.go
+
+run-client:
+	@go run client/client.go
+
+run-tests:
+	@go test ./...
