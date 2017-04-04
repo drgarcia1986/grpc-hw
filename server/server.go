@@ -31,12 +31,18 @@ func main() {
 func runHTTPServer() {
 	ctx := context.Background()
 
-	mux := runtime.NewServeMux()
+	gwmux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 
-	if err := pb.RegisterHelloWorldHandlerFromEndpoint(ctx, mux, rpcPort, opts); err != nil {
+	if err := pb.RegisterHelloWorldHandlerFromEndpoint(ctx, gwmux, rpcPort, opts); err != nil {
 		panic(err)
 	}
+
+	fileServer := http.FileServer(http.Dir("swagger-ui"))
+
+	mux := new(http.ServeMux)
+	mux.Handle("/docs/", http.StripPrefix("/docs/", fileServer))
+	mux.Handle("/", gwmux)
 
 	log.Println("HTTP Server: ", http.ListenAndServe(httpPort, mux))
 }
