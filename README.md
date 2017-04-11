@@ -1,1 +1,1 @@
-# Simple gRPC client and server example
+# gRPC client and server examples
