@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package simpleauth;
+
+service SimpleAuth {
+    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc Restricted(Empty) returns (RestrictedResponse);
+}
+
+message LoginRequest {
+    string user = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    string token = 1;
+}
+
+message RestrictedResponse {
+    string Message = 1;
+}
+
+message Empty {}
