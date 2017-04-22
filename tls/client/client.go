@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 
@@ -12,10 +13,8 @@ import (
 
 func main() {
 	address := "localhost:50051"
-	creds, err := credentials.NewClientTLSFromFile("../cert.crt", "")
-	if err != nil {
-		log.Fatal("error on create creds: ", err)
-	}
+	tlsConfig := &tls.Config{InsecureSkipVerify: true}
+	creds := credentials.NewTLS(tlsConfig)
 	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		log.Fatal("failed to connect: ", err)
