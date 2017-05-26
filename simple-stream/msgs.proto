@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package msgs;
+
+service Messages {
+    rpc Echo(Msg) returns (stream Msg);
+}
+
+message Msg {
+    string msg = 1;
+}
