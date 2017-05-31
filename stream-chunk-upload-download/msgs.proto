@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package uploader;
+
+service Uploader {
+    rpc Upload(stream Msg) returns (stream Msg);
+}
+
+message Msg {
+    message Meta {
+        string filename = 1;
+    }
+    message File {
+        bytes data = 1;
+    }
+    oneof value {
+        Meta meta = 1;
+        File file = 2;
+    }
+}
